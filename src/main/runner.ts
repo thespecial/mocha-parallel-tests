@@ -190,7 +190,14 @@ export default class RunnerMain extends Runner {
               || this.findForgottenTestById(data.id);
             assert(test, `Couldn't find test by id: ${data.id}`);
 
-            this.emit(event, test, data.err);
+            const testErrors = (test as any).err;
+
+            ((typeof(testErrors) === 'object')
+              && (testErrors !== null)
+                && Object.keys(testErrors).length > 0)
+                  ? this.emit(event, test, Object.assign(testErrors, data.err))
+                  : this.emit(event, test, data.err);
+
             break;
           }
 
