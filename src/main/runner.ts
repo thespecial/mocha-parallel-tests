@@ -167,7 +167,7 @@ export default class RunnerMain extends Runner {
           this.emit('waiting', this.rootSuite);
           continue;
         }
-        
+
         if (!isEventWithId(data)) {
           continue;
         }
@@ -210,7 +210,14 @@ export default class RunnerMain extends Runner {
               throw new Error('Unexpected fail event without err field');
             }
 
-            this.emit(event, test, data.err);
+            const testErrors = (test as any).err;
+
+            if (testErrors) {
+              this.emit(event, test, Object.assign({}, testErrors, data.err))
+            } else {
+              this.emit(event, test, data.err)
+            }
+
             break;
           }
 
